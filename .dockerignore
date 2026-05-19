@@ -1,0 +1,10 @@
+.git/
+.github/
+examples/
+dist/
+*.md
+*.png
+install.sh
+main_test.go
+server.crt
+server.key
