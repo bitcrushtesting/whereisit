@@ -9,21 +9,23 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     strategy:
       matrix:
-        os: [linux, darwin]
+        os: [linux, darwin, windows]
         arch: [amd64, arm64]
         include:
           - os: linux
             extension: ''
-          - os: windows
-            extension: '.exe'
           - os: darwin
             extension: ''
+          - os: windows
+            extension: '.exe'
 
     env:
-      APP_NAME: whereisit 
+      APP_NAME: whereisit
 
     steps:
       - name: Checkout code
@@ -50,26 +52,9 @@ jobs:
       - name: Build binary
         run: |
           mkdir -p dist
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o dist/${{ env.APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.extension }}
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -ldflags="-s -w" -o dist/${{ env.APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.extension }}
 
-      - name: Create GitHub Release
-        id: create_release
-        if: ${{ github.event_name == 'push' && github.ref_type == 'tag' && matrix.os == 'linux' }}
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/${{ env.APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.extension }}
-          asset_name: ${{ env.APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.extension }}
-          asset_content_type: application/octet-stream
+          files: dist/${{ env.APP_NAME }}-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.extension }}

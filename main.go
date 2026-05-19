@@ -122,7 +122,7 @@ func main() {
 	}
 	apiRouter.HandleFunc("/register", RegisterDevice).Methods("POST")
 	apiRouter.HandleFunc("/devices", ListDevices).Methods("GET")
-	apiRouter.HandleFunc("/alldevices", ListAllDevices).Methods("GET")
+	apiRouter.HandleFunc("/alldevices", requireAuth(config, ListAllDevices)).Methods("GET")
 
 	spa := spaHandler{staticPath: *publicFolder, indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
@@ -173,6 +173,16 @@ func logRequest(next http.Handler) http.Handler {
 		slog.Debug("Request", "path", r.URL.Path, "external ip", ea)
 		next.ServeHTTP(w, r)
 	})
+}
+
+func requireAuth(config *Config, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !config.ApiKeyAuthEnabled && !config.BasicAuthEnabled {
+			http.Error(w, "Enable api_key or basic_auth in whereisit.ini to access this endpoint", http.StatusForbidden)
+			return
+		}
+		next(w, r)
+	}
 }
 
 func KeyAuth(apiKey string) mux.MiddlewareFunc {
