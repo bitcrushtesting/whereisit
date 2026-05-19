@@ -1,11 +1,11 @@
 # whereisit
 
-[![CI](https://github.com/Boernsman/whereisit/actions/workflows/ci.yml/badge.svg)](https://github.com/Boernsman/whereisit/actions/workflows/ci.yml)
-[![Docker](https://github.com/Boernsman/whereisit/actions/workflows/docker.yml/badge.svg)](https://github.com/Boernsman/whereisit/actions/workflows/docker.yml)
+[![CI](https://github.com/bitcrushtesting/whereisit/actions/workflows/ci.yml/badge.svg)](https://github.com/bitcrushtesting/whereisit/actions/workflows/ci.yml)
+[![Docker](https://github.com/bitcrushtesting/whereisit/actions/workflows/docker.yml/badge.svg)](https://github.com/bitcrushtesting/whereisit/actions/workflows/docker.yml)
 
-Where is my device? And why is Zeroconf not working? Damn it!
+Where is my device? And why is mDNS not working? Damn it!
 
-A lightweight service that helps you locate devices on your network. Devices register themselves with their IP address, and the server groups them by the external IP of the caller — so you only see devices from your current network.
+A lightweight service that helps you locate devices on your network. Devices register themselves with their IP address, and the server groups them by the external IP of the caller. So you only see devices from your current network.
 
 ![whereisit_ui](whereisit_ui.png)
 
@@ -24,7 +24,7 @@ Devices on your network periodically POST their hostname and IP to `/api/registe
 ### Docker
 
 ```sh
-docker run -p 8180:8180 ghcr.io/boernsman/whereisit:latest
+docker run -p 8180:8180 ghcr.io/bitcrushtesting/whereisit:latest
 ```
 
 Override the configuration with a volume mount:
@@ -32,13 +32,7 @@ Override the configuration with a volume mount:
 ```sh
 docker run -p 8180:8180 \
   -v /path/to/whereisit.ini:/etc/whereisit.ini \
-  ghcr.io/boernsman/whereisit:latest
-```
-
-### Install script
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/Boernsman/whereisit/main/install.sh | sh
+  ghcr.io/bitcrushtesting/whereisit:latest
 ```
 
 ## API
